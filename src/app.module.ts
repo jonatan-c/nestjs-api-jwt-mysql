@@ -1,3 +1,4 @@
+import { roles } from './app.roles';
 import {
   DATABASE_HOST,
   DATABASE_PORT,
@@ -13,6 +14,7 @@ import { AppService } from './app.service';
 import { TaskModule } from './task/task.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { AccessControlModule } from 'nest-access-control';
 
 @Module({
   imports: [
@@ -36,9 +38,10 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    TaskModule,
-    UserModule,
+    AccessControlModule.forRoles(roles),
     AuthModule,
+    UserModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

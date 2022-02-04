@@ -1,3 +1,4 @@
+import { Auth } from 'src/common/decorators/auth.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { EditTaskDTO } from './dtos/edit-task.dto';
 import { TaskService } from './task.service';
@@ -30,11 +31,13 @@ export class TaskController {
     return await this.taskService.getTaskById(id);
   }
 
+  @Auth()
   @Post()
   async createTask(@Body() createtaskDTO: CreateTaskDTO) {
     return await this.taskService.createTask(createtaskDTO);
   }
 
+  @Auth()
   @Put('/:id')
   async updateTask(
     @Res() res,
@@ -48,6 +51,7 @@ export class TaskController {
     });
   }
 
+  @Auth()
   @Delete('/:id')
   async deleteTask(@Res() res, @Param('id') id: number) {
     const task = await this.taskService.deleteTask(id);

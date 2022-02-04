@@ -1,3 +1,4 @@
+import { JwtStrategy } from './strategies/jwt-strategy';
 /* eslint-disable prettier/prettier */
 import { JWT_SECRET } from './../config/constants';
 import { ConfigService } from '@nestjs/config';
@@ -11,17 +12,19 @@ import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+    }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get(JWT_SECRET),
-        signOptions: { expiresIn: '60s' },
+        signOptions: { expiresIn: '60m' },
       }),
     }),
     UserModule,
   ],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

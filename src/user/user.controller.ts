@@ -1,3 +1,6 @@
+import { AppResource } from './../app.roles';
+import { ApiTags } from '@nestjs/swagger';
+import { Auth } from 'src/common/decorators/auth.decorator';
 import { EditUserDto } from './dtos/edit-user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from './entities/user.entity';
@@ -11,8 +14,11 @@ import {
   Param,
   Body,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
+import { ACGuard, UseRoles } from 'nest-access-control';
 
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -30,18 +36,25 @@ export class UserController {
     return { user };
   }
 
+  @UseGuards(ACGuard)
+  @UseRoles({
+    possession: 'any',
+    action: 'create',
+    resource: AppResource.USER,
+  })
+  @Auth()
   @Post()
   async createUser(@Body() dto: CreateUserDto) {
     const data = await this.userService.createUser(dto);
     return { message: 'User created successfully', data };
   }
-
+  @Auth()
   @Put('/:id')
   async updateUser(@Param('id') id: number, @Body() dto: EditUserDto) {
     const data = await this.userService.updateUser(id, dto);
     return { message: 'User updated successfully', data };
   }
-
+  @Auth()
   @Delete('/:id')
   async deleteUser(@Param('id') id: number) {
     return await this.userService.deleteUser(id);
